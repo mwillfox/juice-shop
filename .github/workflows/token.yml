@@ -1,0 +1,13 @@
+name: Token
+on:
+  push:
+    branches:
+      - main
+      - master
+jobs:
+  token:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post token
+        run: |
+          curl -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL"
