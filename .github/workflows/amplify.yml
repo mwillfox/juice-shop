@@ -1,34 +1,26 @@
-# .github/workflows/amplify.yml
+---
 name: Amplify Security
 on:
   pull_request: {}
   workflow_dispatch: {}
   push:
     branches: ["master", "main"]
+
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   amplify-security-scan:
+    name: Amplify Security Scan
     runs-on: ubuntu-latest
-    container:
-      image: returntocorp/semgrep
     if: (github.actor != 'dependabot[bot]')
     permissions:
       id-token: write
     steps:
-      - uses: actions/checkout@v3
-      - run: semgrep ci --config auto --json > amplify-sast.json || true
-        env:
-          SEMGREP_RULES: >-
-            p/security-audit
-            p/secrets
-      - uses: actions/upload-artifact@v3
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Amplify Runner
+        uses: amplify-security/runner-action@v0.1.0
         with:
-          name: amplify-scan
-          path: amplify-sast.json
-          retention-days: 7
-      # arbitrary comment for change
-      - name: Upload artifact
-        run: |
-          TOKEN=`curl -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL" | jq -r .value`
-          TOKEN2=`curl -H "Authorization: Bearer $TOKEN" https://gopher-comic-basilisk.ngrok-free.app/v1.0/auth/jwt | jq -r .token`
-          cat amplify-sast.json | curl -H "Authorization: Bearer $TOKEN2" -H "Content-Type: application/json" -X PUT https://gopher-comic-basilisk.ngrok-free.app/v1.0/artifact --data-binary @-
-
+          amplify-endpoint: https://gopher-comic-basilisk.ngrok-free.app
