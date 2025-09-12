@@ -19,6 +19,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Amplify Runner
-        uses: amplify-security/runner-action@v0.1.0
+        uses: amplify-security/runner-action@develop
         with:
           amplify-endpoint: https://gopher-comic-basilisk.ngrok-free.app
